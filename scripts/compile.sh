@@ -178,18 +178,6 @@ log_info Updated INSTALLARGS to:
 log_info $INSTALLARGS
 
 ##########################################################################################
-# Prepare environment
-##########################################################################################
-log_header Directories
-
-# Create output dirs
-# Customize me
-log_step Creating output directory structure...
-mkdir -p /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/overlays && \
-mkdir -p /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/ext4 > /app/$MODEL-directories-$BRANCH-$GITCOMMITHASH.log || (log_error Creating directories failed!)
-log_done
-
-##########################################################################################
 # Makes
 ##########################################################################################
 log_header Build
@@ -241,6 +229,18 @@ then
     make $BUILDARGS dtbs > /app/$MODEL-make_dtbs-$BRANCH-$GITCOMMITHASH.log || (log_error make dtbs failed!)
     log_done
 fi
+
+##########################################################################################
+# Prepare environment
+##########################################################################################
+log_header Directories
+
+# Create output dirs
+# Customize me
+log_step Creating output directory structure...
+mkdir -p /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/overlays && \
+mkdir -p /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/ext4 > /app/$MODEL-directories-$BRANCH-$GITCOMMITHASH.log || (log_error Creating directories failed!)
+log_done
 
 ##########################################################################################
 # make modules_install & copy compiled files
