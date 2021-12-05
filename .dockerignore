@@ -1,0 +1,12 @@
+# ignore output directories
+app32
+app64
+
+# ignore .env file
+.env
+
+# ignore text cache files
+*~
+
+# ignore compile.sh
+compile.sh

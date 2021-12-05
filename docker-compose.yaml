@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  # Builds with "<volume>/linux.config" file, defaults to pi4x64
+  buildenv:
+    build: .
+    image: "pios-kbuildenv"
+    environment:
+      - GITCOMMITHASH=${GITCOMMITHASH}
+      - MODEL=${MODEL:-pi4x64}
+      - MAKEJOBS=${MAKEJOBS:-4}
+      - MAKEOPTS=${MAKEOPTS}
+      - MAKE_CLEAN=${MAKE_CLEAN:-false}
+      - MAKE_DEFCONFIG=${MAKE_DEFCONFIG:-true}
+      - MAKE_IMAGE=${MAKE_IMAGE:-true}
+      - MAKE_MODULES=${MAKE_MODULES:-true}
+      - MAKE_DTBS=${MAKE_DTBS:-true}
+      - MAKE_MODULES_INSTALL=${MAKE_MODULES_INSTALL:-true}
+    volumes:
+      - "./${SCRIPT:-scripts/compile.sh}:/compile.sh"
+      - "./${OUTPUTDIR:-app64}:/app"
+
+  # Uses / Requires kconfig file, defaults to pi4x64
+  buildenv_kconfig:
+    build: .
+    image: "pios-kbuildenv-kconfig"
+    environment:
+      - GITCOMMITHASH=${GITCOMMITHASH}
+      - MODEL=${MODEL:-pi4x64}
+      - MAKEJOBS=${MAKEJOBS:-4}
+      - MAKEOPTS=${MAKEOPTS}
+      - MAKE_CLEAN=${MAKE_CLEAN:-false}
+      - MAKE_DEFCONFIG=${MAKE_DEFCONFIG:-true}
+      - MAKE_IMAGE=${MAKE_IMAGE:-true}
+      - MAKE_MODULES=${MAKE_MODULES:-true}
+      - MAKE_DTBS=${MAKE_DTBS:-true}
+      - MAKE_MODULES_INSTALL=${MAKE_MODULES_INSTALL:-true}
+      - KCONFIG=${KCONFIG:-configs/pi4x64.config}
+    volumes:
+      - "./${SCRIPT:-scripts/compile.sh}:/compile.sh"
+      - "./${OUTPUTDIR:-app64}:/app"
+      - "./${KCONFIG:-configs/pi4x64.config}:/config"
