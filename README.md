@@ -45,6 +45,27 @@ This is a simple *Debian Bullseye (Slim)* based docker container with added pack
 
 Eventually, the script will copy the compiled files to `<volumes>/output/{fat32|ext4}`
 
+## Environment variables
+
+| Variable | Default | Description |
+| --- | --- | --- | --- |
+| `EXIT_ON_ERROR` | `true` | Exit `$SCRIPT` on errors |
+| `GITCOMMITHASH` | `empty` | Git commit state to build |
+| `REPOSITORY` | `https://github.com/raspberrypi/linux` | Git repository to use |
+| `BRANCH` | `rpi-5.10.y` | Git branch to use |
+| `MODEL` | `pi4x64` | Raspberry Pi model to build for (allowed values are `pi4x64`, `pi4x86`, `pi3x64`, `pi3x86`, `pi2`, `pi1zero`) |
+| `KCONFIG` | `empty` | KCONFIG file to use in combination with the `buildenv_kconfig` service |
+| `OUTPUTDIR` | `app64` | Volume / output directory |
+| `MAKE_CLEAN` | `false` | Run `make clean` step |
+| `MAKE_DEFCONFIG` | `true` | Run `make defconfig` step |
+| `MAKE_IMAGE` | `true` | Run `make (z)Image` step |
+| `MAKE_MODULES` | `true` | Run `make modules` step |
+| `MAKE_DTBS` | `true` | Run `make dtbs` step |
+| `MAKE_MODULES_INSTALL` | `true` | Run `make modules_install` step |
+| `MAKEOPTS` | `empty` | Additional flags and parameters for `make` |
+| `MAKEJOBS` | `4` | Amount of parallel make jobs |
+| `SCRIPT` | `scripts/compile.sh` | Script to call after starting the container |
+
 ## Links:
 - :arrow_right: Jeff Geerling's Blog: https://www.jeffgeerling.com
 - :penguin: Official Raspberry Pi cross-compiling documentation: https://www.raspberrypi.com/documentation/computers/linux_kernel.html
