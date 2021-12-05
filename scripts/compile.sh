@@ -144,7 +144,7 @@ cd /app
 if [ ! -d "linux-$BRANCH" ]
 then
     log_step Cloning kernel repository...
-    git clone --branch $BRANCH --depth=1 $REPOSITORY linux-$BRANCH > /app/sources.log || (log_error git clone failed!) && \
+    git clone --depth=1 $REPOSITORY linux-$BRANCH > /app/sources.log || (log_error git clone failed!) && \
     git checkout $BRANCH >> /app/sources.log || (log_error git checkout failed!)
     log_done
     cd linux-$BRANCH
