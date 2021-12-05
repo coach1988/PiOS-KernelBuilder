@@ -48,7 +48,7 @@ Eventually, the script will copy the compiled files to `<volumes>/output-<branch
 ## Environment variables
 
 | Variable | Default | Description |
-| --- | --- | --- | --- |
+| --- | --- | --- |
 | `EXIT_ON_ERROR` | `true` | Exit `$SCRIPT` on errors |
 | `GITCOMMITHASH` | `empty` | Git commit state to build (uses the latest if not specified) |
 | `REPOSITORY` | `https://github.com/raspberrypi/linux` | Git repository to use |
