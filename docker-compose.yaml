@@ -6,6 +6,7 @@ services:
     build: .
     image: "pios-kbuildenv"
     environment:
+      - EXIT_ON_ERROR=${EXIT_ON_ERROR:-true}
       - GITCOMMITHASH=${GITCOMMITHASH}
       - MODEL=${MODEL:-pi4x64}
       - MAKEJOBS=${MAKEJOBS:-4}
@@ -25,6 +26,7 @@ services:
     build: .
     image: "pios-kbuildenv-kconfig"
     environment:
+      - EXIT_ON_ERROR=${EXIT_ON_ERROR:-true}    
       - GITCOMMITHASH=${GITCOMMITHASH}
       - MODEL=${MODEL:-pi4x64}
       - MAKEJOBS=${MAKEJOBS:-4}

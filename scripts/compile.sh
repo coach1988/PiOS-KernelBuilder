@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ $EXIT_ON_ERROR = "true" ]
+then
+    set -e
+fi
+
 ##########################################################################################
 # Auxiliary functions
 ##########################################################################################
@@ -19,8 +24,8 @@ log_step () {
     echo \|-- $@
 }
 
-log_result () {
-    echo \| Done $@
+log_done () {
+    echo \| Done
 }
 
 log_header () {
@@ -34,7 +39,11 @@ log_info () {
 }
 
 log_error () {
-    echo \| Error: $@
+    echo \| Error $?: $@
+    if [ $EXIT_ON_ERROR = "true" ]
+    then
+        exit -1
+    fi
 }
 
 get_env () {
@@ -56,6 +65,7 @@ get_env () {
     log_env MAKEOPTS=$MAKEOPTS
     log_env BUILDARGS=$BUILDARGS
     log_env INSTALLARGS=$INSTALLARGS
+    log_env EXIT_ON_ERROR=$EXIT_ON_ERROR
 }
 
 update_env () {
@@ -136,22 +146,22 @@ cd /app
 if [ ! -d "linux" ]
 then
     log_step Cloning kernel repository...
-    git clone --depth=1 $REPOSITORY linux > /app/sources.log || (log_error git clone failed! && exit -1)
-    log_result
+    git clone --depth=1 $REPOSITORY linux > /app/sources.log || (log_error git clone failed!)
+    log_done
     cd linux
 else
     log_step Pulling latest changes...
     cd linux && \
-    git pull --rebase > /app/sources.log || (log_error git pull failed! && exit -1)
-    log_result
+    git pull --rebase > /app/sources.log || (log_error git pull failed!)
+    log_done
 fi
 
 # Git reset if commit was specified
 if [ -n "$GITCOMMITHASH" ]
 then
     log_step Setting commit...
-    git reset --hard $GITCOMMITHASH >> /app/sources.log || (log_error git reset failed! && exit -1)
-    log_result
+    git reset --hard $GITCOMMITHASH >> /app/sources.log || (log_error git reset failed!)
+    log_done
 else
     export GITCOMMITHASH=$(git rev-parse --short HEAD)
 fi
@@ -166,12 +176,12 @@ log_info $INSTALLARGS
 ##########################################################################################
 log_header Directories
 
-# Customize me
 # Create output dirs
+# Customize me
 log_step Creating output directory structure...
 mkdir -p /app/output-$GITCOMMITHASH/fat32/overlays && \
-mkdir -p /app/output-$GITCOMMITHASH/ext4 || (log_error Creating directories failed! && exit -1)
-log_result
+mkdir -p /app/output-$GITCOMMITHASH/ext4 || (log_error Creating directories failed!)
+log_done
 
 ##########################################################################################
 # Makes
@@ -182,48 +192,48 @@ log_header Build
 if [ $MAKE_CLEAN = "true" ]
 then
     log_step make clean
-    make $BUILDARGS clean > /app/make_01-clean.log || (log_error make clean failed! && exit -1)
-    log_result
+    make $BUILDARGS clean > /app/make_01-clean.log || (log_error make clean failed!)
+    log_done
 fi
 
 # make defconfig
 if [ $MAKE_DEFCONFIG = "true" ]
 then
     log_step make defconfig
-    make $BUILDARGS $DEFCONFIG > /app/make_02defconfig.log || (log_error make defconfig failed! && exit -1)
-    log_result
+    make $BUILDARGS $DEFCONFIG > /app/make_02defconfig.log || (log_error make defconfig failed!)
+    log_done
 fi
 
 # Use mounted /config as .config
 if [ -f /config ]
 then
     log_step Found kconfig to use, copying...
-    cp /config /app/linux/.config || (log_error Copying kconfig failed! && exit -1)
-    log_result
+    cp /config /app/linux/.config || (log_error Copying kconfig failed!)
+    log_done
 fi
 
 # make $IMAGE
 if [ $MAKE_IMAGE = "true" ]
 then
     log_step make $IMAGE
-    make $BUILDARGS $IMAGE > /app/make_03image.log || (log_error make image failed! && exit -1)
-    log_result
+    make $BUILDARGS $IMAGE > /app/make_03image.log || (log_error make image failed!)
+    log_done
 fi
 
 # make modules
 if [ $MAKE_MODULES = "true" ]
 then
     log_step make modules
-    make $BUILDARGS modules > /app/make_04modules.log || (log_error make modules failed! && exit -1)
-    log_result
+    make $BUILDARGS modules > /app/make_04modules.log || (log_error make modules failed!)
+    log_done
 fi
 
 # make dtbs
 if [ $MAKE_DTBS = "true" ]
 then
     log_step make dtbs
-    make $BUILDARGS dtbs > /app/make_05dtbs.log || (log_error make dtbs failed! && exit -1)
-    log_result
+    make $BUILDARGS dtbs > /app/make_05dtbs.log || (log_error make dtbs failed!)
+    log_done
 fi
 
 ##########################################################################################
@@ -235,12 +245,12 @@ log_header Copying
 if [ $MAKE_MODULES_INSTALL = "true" ]
 then
     log_step make modules_install
-    make $MAKEOPTS $INSTALLARGS modules_install > /app/make_06modules_install.log || (log_error make modules_install failed! && exit -1)
-    log_result
+    make $MAKEOPTS $INSTALLARGS modules_install > /app/make_06modules_install.log || (log_error make modules_install failed!)
+    log_done
 fi
 
-# Customize me
 # Copy kernel and dtb's
+# Customize me
 log_step Copying compiled files to /app/output-$GITCOMMITHASH...
 cp -v arch/$ARCH/boot/$IMAGE /app/output-$GITCOMMITHASH/fat32/$KERNEL.img > /app/copying.log && \
 cp -v arch/$ARCH/boot/dts/overlays/*.dtb* /app/output-$GITCOMMITHASH/fat32/overlays/ >> /app/copying.log && \
@@ -250,7 +260,7 @@ then
     cp -v arch/$ARCH/boot/dts/broadcom/*.dtb /app/output-$GITCOMMITHASH/fat32/ >> /app/copying.log
 else
     cp -v arch/$ARCH/boot/dts/*.dtb /app/output-$GITCOMMITHASH/fat32/ >> /app/copying.log
-fi || (log_error Copying compiled files failed! && exit -1)
-log_result
+fi || (log_error Copying compiled files failed!)
+log_done
 
 log_header Finished
