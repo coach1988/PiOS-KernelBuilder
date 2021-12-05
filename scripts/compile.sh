@@ -47,27 +47,32 @@ log_done () {
 }
 
 get_env () {
-    log_env REPOSITORY=$REPOSITORY
-    log_env GITCOMMITHASH=$GITCOMMITHASH
-    log_env CROSS_COMPILE=$CROSS_COMPILE
-    log_env MODEL=$MODEL
-    log_env ARCH=$ARCH
-    log_env KERNEL=$KERNEL
-    log_env REPOSITORY=$REPOSITORY    
-    log_env BRANCH=$BRANCH
-    log_env KCONFIG=$KCONFIG
-    log_env DEFCONFIG=$DEFCONFIG
-    log_env MAKE_CLEAN=$MAKE_CLEAN
-    log_env MAKE_DEFCONFIG=$MAKE_DEFCONFIG
-    log_env MAKE_IMAGE=$MAKE_IMAGE
-    log_env MAKE_MODULES=$MAKE_MODULES
-    log_env MAKE_DTBS=$MAKE_DTBS
-    log_env MAKE_MODULES_INSTALL=$MAKE_MODULES_INSTALL
-    log_env MAKEJOBS=$MAKEJOBS
-    log_env MAKEOPTS=$MAKEOPTS
-    log_env BUILDARGS=$BUILDARGS
-    log_env INSTALLARGS=$INSTALLARGS
-    log_env EXIT_ON_ERROR=$EXIT_ON_ERROR
+    for envvar in $(echo \
+        REPOSITORY=$REPOSITORY \
+        GITCOMMITHASH=$GITCOMMITHASH \
+        CROSS_COMPILE=$CROSS_COMPILE \
+        MODEL=$MODEL \
+        ARCH=$ARCH \
+        KERNEL=$KERNEL \
+        REPOSITORY=$REPOSITORY \
+        BRANCH=$BRANCH \
+        KCONFIG=$KCONFIG \
+        DEFCONFIG=$DEFCONFIG \
+        MAKE_CLEAN=$MAKE_CLEAN \
+        MAKE_DEFCONFIG=$MAKE_DEFCONFIG \
+        MAKE_IMAGE=$MAKE_IMAGE \
+        MAKE_MODULES=$MAKE_MODULES \
+        MAKE_DTBS=$MAKE_DTBS \
+        MAKE_MODULES_INSTALL=$MAKE_MODULES_INSTALL \
+        MAKEJOBS=$MAKEJOBS \
+        MAKEOPTS=$MAKEOPTS \
+        BUILDARGS=$BUILDARGS \
+        INSTALLARGS=$INSTALLARGS \
+        EXIT_ON_ERROR=$EXIT_ON_ERROR
+    )
+    do
+        log_env $envvar
+    done
 }
 
 ##########################################################################################
