@@ -7,7 +7,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Add start script
-COPY ./entryPoint.sh /entryPoint.sh
+COPY ./scripts/entryPoint.sh /entryPoint.sh
 
 RUN mkdir /app && \
     chmod u+x /entryPoint.sh
