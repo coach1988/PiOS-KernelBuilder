@@ -42,6 +42,7 @@ This is a simple *Debian Bullseye (Slim)* based docker container with added pack
   - `make modules`
   - `make dtbs`
   - `make modules_install`
+
 Eventually, the script will copy the compiled files to `<volumes>/output/{fat32|ext4}`
 
 ## Links:
