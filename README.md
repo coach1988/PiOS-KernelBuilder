@@ -24,7 +24,7 @@
 ## Tips & Tricks
 - If you change `OUTPUTDIR` or `SCRIPT` from defaults: Add the volume's directory/script file to the `.dockerignore` file (if it is in the same folder as the docker-compose; This avoids sending big build contexts to the daemon) and the `.gitignore` file
 - The default volume bind folders are `./app64` and `./app32`
-  - Compiled files will be saved under `<volume>/output-<gitcommithash>/{fat32|ext4}`
+  - Compiled files will be saved under `<volume>/output-<branch>-<gitcommithash>/{fat32|ext4}`
   - Kernel sources will be cloned to `<volume>/linux-<branch>`
   - Each stage will log the output to `<volume>/*.log`
 - The default amount of maximum parallel Makejobs (`-jN`) defaults to `4`. It can be adjusted via the `.env` file/environment variable `MAKEJOBS`
@@ -43,7 +43,7 @@ This is a simple *Debian Bullseye (Slim)* based docker container with added pack
   - `make dtbs`
   - `make modules_install`
 
-Eventually, the script will copy the compiled files to `<volumes>/output/{fat32|ext4}`
+Eventually, the script will copy the compiled files to `<volumes>/output-<branch>-<gitcommithash>/{fat32|ext4}`
 
 ## Environment variables
 

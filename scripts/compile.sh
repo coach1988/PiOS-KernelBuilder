@@ -129,7 +129,7 @@ esac
 log_header Environment
 
 # Customize me
-export INSTALLARGS="ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE INSTALL_MOD_PATH=/app/output-$GITCOMMITHASH/ext4"
+export INSTALLARGS="ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE INSTALL_MOD_PATH=/app/output-$BRANCH-$GITCOMMITHASH/ext4"
 export BUILDARGS="-j$MAKEJOBS $MAKEOPTS ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE"
 
 get_env | tee /app/env.log
@@ -145,14 +145,14 @@ if [ ! -d "linux-$BRANCH" ]
 then
     log_step Cloning kernel repository...
     git clone --depth=1 $REPOSITORY linux-$BRANCH > /app/sources.log || (log_error git clone failed!) && \
+    cd linux-$BRANCH && \
     git checkout $BRANCH >> /app/sources.log || (log_error git checkout failed!)
     log_done
-    cd linux-$BRANCH
+
 else
     log_step Pulling latest changes...
     cd linux-$BRANCH && \
-    git checkout $BRANCH > /app/sources.log || (log_error git checkout failed!) && \
-    git pull --rebase >> /app/sources.log || (log_error git pull failed!) && \
+    git pull --rebase >> /app/sources.log || (log_error git pull failed!)
     log_done
 fi
 
@@ -168,7 +168,7 @@ fi
 log_step Using commit $GITCOMMITHASH...
 
 # Re-set $INSTALLARGS as we have $GITCOMMITHASH now
-export INSTALLARGS="ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE INSTALL_MOD_PATH=/app/output-$GITCOMMITHASH/ext4"
+export INSTALLARGS="ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE INSTALL_MOD_PATH=/app/output-$BRANCH-$GITCOMMITHASH/ext4"
 log_info Updated INSTALLARGS to:
 log_info $INSTALLARGS
 
@@ -180,8 +180,8 @@ log_header Directories
 # Create output dirs
 # Customize me
 log_step Creating output directory structure...
-mkdir -p /app/output-$GITCOMMITHASH/fat32/overlays && \
-mkdir -p /app/output-$GITCOMMITHASH/ext4 || (log_error Creating directories failed!)
+mkdir -p /app/output-$BRANCH-$GITCOMMITHASH/fat32/overlays && \
+mkdir -p /app/output-$BRANCH-$GITCOMMITHASH/ext4 || (log_error Creating directories failed!)
 log_done
 
 ##########################################################################################
@@ -252,15 +252,15 @@ fi
 
 # Copy kernel and dtb's
 # Customize me
-log_step Copying compiled files to /app/output-$GITCOMMITHASH...
-cp -v arch/$ARCH/boot/$IMAGE /app/output-$GITCOMMITHASH/fat32/$KERNEL.img > /app/copying.log && \
-cp -v arch/$ARCH/boot/dts/overlays/*.dtb* /app/output-$GITCOMMITHASH/fat32/overlays/ >> /app/copying.log && \
-cp -v arch/$ARCH/boot/dts/overlays/README /app/output-$GITCOMMITHASH/fat32/overlays/ >> /app/copying.log && \
+log_step Copying compiled files to /app/output-$BRANCH-$GITCOMMITHASH...
+cp -v arch/$ARCH/boot/$IMAGE /app/output-$BRANCH-$GITCOMMITHASH/fat32/$KERNEL.img > /app/copying.log && \
+cp -v arch/$ARCH/boot/dts/overlays/*.dtb* /app/output-$BRANCH-$GITCOMMITHASH/fat32/overlays/ >> /app/copying.log && \
+cp -v arch/$ARCH/boot/dts/overlays/README /app/output-$BRANCH-$GITCOMMITHASH/fat32/overlays/ >> /app/copying.log && \
 if [ $ARCH = "arm64" ]
 then
-    cp -v arch/$ARCH/boot/dts/broadcom/*.dtb /app/output-$GITCOMMITHASH/fat32/ >> /app/copying.log
+    cp -v arch/$ARCH/boot/dts/broadcom/*.dtb /app/output-$BRANCH-$GITCOMMITHASH/fat32/ >> /app/copying.log
 else
-    cp -v arch/$ARCH/boot/dts/*.dtb /app/output-$GITCOMMITHASH/fat32/ >> /app/copying.log
+    cp -v arch/$ARCH/boot/dts/*.dtb /app/output-$BRANCH-$GITCOMMITHASH/fat32/ >> /app/copying.log
 fi || (log_error Copying compiled files failed!)
 log_done
 
