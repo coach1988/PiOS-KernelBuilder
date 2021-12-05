@@ -1,6 +1,6 @@
 # PiOS-KernelBuilder
 ## About the project
-- This is a simple container with a heavily parameterized, yet simple build script to compile a default or *custom kernel for 32- and 64-bit PiOS installations*
+- This is a simple container with a heavily parameterized, yet simple build script to cross-compile a default or *custom kernel for 32- and 64-bit PiOS installations*
 - Based on *Jeff Geerling's* work and inspiration :bulb: (e.g. https://www.jeffgeerling.com/blog/2020/cross-compiling-raspberry-pi-os-linux-kernel-on-macos)
   - Thank you Jeff for your entertaining and informative way of presenting your test results and project. This is for people like you, to help people like us achieving other wild things for our Pis
 - I'm no developer, this is my first attempt to create a (useful) image and I'm still a docker novice, so please bear with me;-) If there are things I should change or add regarding e.g. the git handling (or if you have feedback in general), let me know and I'll do my best to improve it
@@ -32,7 +32,7 @@
 
 
 ## How it works & what it does
-This is a simple *Debian Bullseye (Slim)* based docker container with added packages required to build *32- and 64-bit PiOS kernels*. It starts a simple script (`entryPoint.sh`), which calls an externally mounted main script (to avoid rebuilds for every change to the script). This main script parses variables from `.env` files or environment and executes:
+This is a simple *Debian Bullseye (Slim)* based docker container with added packages required to cross-compile *32- and 64-bit PiOS kernels*. It starts a simple script (`entryPoint.sh`), which calls an externally mounted main script (to avoid rebuilds for every change to the script). This main script parses variables from `.env` files or environment and executes:
   - `git clone / pull`
   - `git reset --hard` (if commit hash was given)
   - `make clean`

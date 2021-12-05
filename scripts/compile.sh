@@ -137,7 +137,7 @@ log_header Environment
 export INSTALLARGS="ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE INSTALL_MOD_PATH=/app/$MODEL-output-$BRANCH-$GITCOMMITHASH/ext4"
 export BUILDARGS="-j$MAKEJOBS $MAKEOPTS ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE"
 
-get_env | tee /app/env.log
+get_env | tee /app/$MODEL-env-$BRANCH.log
 
 ##########################################################################################
 # Prepare source
@@ -149,15 +149,15 @@ cd /app
 if [ ! -d "$MODEL-linux-$BRANCH" ]
 then
     log_step Cloning kernel repository...
-    git clone --depth=1 --branch $BRANCH $REPOSITORY $MODEL-linux-$BRANCH > /app/sources.log || (log_error git clone failed!)
+    git clone --depth=1 --branch $BRANCH $REPOSITORY $MODEL-linux-$BRANCH > /app/$MODEL-sources-$BRANCH-$GITCOMMITHASH.log || (log_error git clone failed!)
     cd $MODEL-linux-$BRANCH && \
-    git checkout $BRANCH >> /app/sources.log || (log_error git checkout failed!)
+    git checkout $BRANCH >> /app/$MODEL-sources-$BRANCH-$GITCOMMITHASH.log || (log_error git checkout failed!)
     log_done
 else
     log_step Pulling latest changes...
     cd $MODEL-linux-$BRANCH && \
-    git checkout $BRANCH >> /app/sources.log || (log_error git checkout failed!)
-    git pull --rebase >> /app/sources.log || (log_error git pull failed!)
+    git checkout $BRANCH >> /app/$MODEL-sources-$BRANCH-$GITCOMMITHASH.log || (log_error git checkout failed!)
+    git pull --rebase >> /app/$MODEL-sources-$BRANCH-$GITCOMMITHASH.log || (log_error git pull failed!)
     log_done
 fi
 
@@ -165,7 +165,7 @@ fi
 if [ -n "$GITCOMMITHASH" ]
 then
     log_step Setting commit...
-    git reset --hard $GITCOMMITHASH >> /app/sources.log || (log_error git reset failed!)
+    git reset --hard $GITCOMMITHASH >> /app/$MODEL-sources-$BRANCH-$GITCOMMITHASH.log || (log_error git reset failed!)
     log_done
 else
     export GITCOMMITHASH=$(git rev-parse --short HEAD)  
@@ -186,7 +186,7 @@ log_header Directories
 # Customize me
 log_step Creating output directory structure...
 mkdir -p /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/overlays && \
-mkdir -p /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/ext4 || (log_error Creating directories failed!)
+mkdir -p /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/ext4 > /app/$MODEL-directories-$BRANCH-$GITCOMMITHASH.log || (log_error Creating directories failed!)
 log_done
 
 ##########################################################################################
@@ -198,7 +198,7 @@ log_header Build
 if [ $MAKE_CLEAN = "true" ]
 then
     log_step make clean
-    make $BUILDARGS clean > /app/make_01-clean.log || (log_error make clean failed!)
+    make $BUILDARGS clean > /app/$MODEL-make_clean-$BRANCH-$GITCOMMITHASH.log || (log_error make clean failed!)
     log_done
 fi
 
@@ -206,7 +206,7 @@ fi
 if [ $MAKE_DEFCONFIG = "true" ]
 then
     log_step make defconfig
-    make $BUILDARGS $DEFCONFIG > /app/make_02defconfig.log || (log_error make defconfig failed!)
+    make $BUILDARGS $DEFCONFIG > /app/$MODEL-make_defconfig-$BRANCH-$GITCOMMITHASH.log || (log_error make defconfig failed!)
     log_done
 fi
 
@@ -214,7 +214,7 @@ fi
 if [ -f /config ]
 then
     log_step Found kconfig to use, copying...
-    cp /config /app/linux/.config || (log_error Copying kconfig failed!)
+    cp /config /app/linux/.config > /app/$MODEL-copy_kconfig-$BRANCH-$GITCOMMITHASH.log || (log_error Copying kconfig failed!)
     log_done
 fi
 
@@ -222,7 +222,7 @@ fi
 if [ $MAKE_IMAGE = "true" ]
 then
     log_step make $IMAGE
-    make $BUILDARGS $IMAGE > /app/make_03image.log || (log_error make image failed!)
+    make $BUILDARGS $IMAGE > /app/$MODEL-make_image-$BRANCH-$GITCOMMITHASH.log || (log_error make image failed!)
     log_done
 fi
 
@@ -230,7 +230,7 @@ fi
 if [ $MAKE_MODULES = "true" ]
 then
     log_step make modules
-    make $BUILDARGS modules > /app/make_04modules.log || (log_error make modules failed!)
+    make $BUILDARGS modules > /app/$MODEL-make_modules-$BRANCH-$GITCOMMITHASH.log || (log_error make modules failed!)
     log_done
 fi
 
@@ -238,7 +238,7 @@ fi
 if [ $MAKE_DTBS = "true" ]
 then
     log_step make dtbs
-    make $BUILDARGS dtbs > /app/make_05dtbs.log || (log_error make dtbs failed!)
+    make $BUILDARGS dtbs > /app/$MODEL-make_dtbs-$BRANCH-$GITCOMMITHASH.log || (log_error make dtbs failed!)
     log_done
 fi
 
@@ -251,21 +251,21 @@ log_header Copying
 if [ $MAKE_MODULES_INSTALL = "true" ]
 then
     log_step make modules_install
-    make $MAKEOPTS $INSTALLARGS modules_install > /app/make_06modules_install.log || (log_error make modules_install failed!)
+    make $MAKEOPTS $INSTALLARGS modules_install > /app/$MODEL-make_modules_install-$BRANCH-$GITCOMMITHASH.log || (log_error make modules_install failed!)
     log_done
 fi
 
 # Copy kernel and dtb's
 # Customize me
 log_step Copying compiled files to /app/$MODEL-output-$BRANCH-$GITCOMMITHASH...
-cp -v arch/$ARCH/boot/$IMAGE /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/$KERNEL.img > /app/copying.log && \
-cp -v arch/$ARCH/boot/dts/overlays/*.dtb* /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/overlays/ >> /app/copying.log && \
-cp -v arch/$ARCH/boot/dts/overlays/README /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/overlays/ >> /app/copying.log && \
+cp -v arch/$ARCH/boot/$IMAGE /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/$KERNEL.img > /app/$MODEL-copy-$BRANCH-$GITCOMMITHASH.log && \
+cp -v arch/$ARCH/boot/dts/overlays/*.dtb* /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/overlays/ >> /app/$MODEL-copy-$BRANCH-$GITCOMMITHASH.log && \
+cp -v arch/$ARCH/boot/dts/overlays/README /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/overlays/ >> /app/$MODEL-copy-$BRANCH-$GITCOMMITHASH.log && \
 if [ $ARCH = "arm64" ]
 then
-    cp -v arch/$ARCH/boot/dts/broadcom/*.dtb /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/ >> /app/copying.log
+    cp -v arch/$ARCH/boot/dts/broadcom/*.dtb /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/ >> /app/$MODEL-copy-$BRANCH-$GITCOMMITHASH.log
 else
-    cp -v arch/$ARCH/boot/dts/*.dtb /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/ >> /app/copying.log
+    cp -v arch/$ARCH/boot/dts/*.dtb /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/ >> /app/$MODEL-copy-$BRANCH-$GITCOMMITHASH.log
 fi || (log_error Copying compiled files failed!)
 log_done
 
