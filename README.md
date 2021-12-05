@@ -25,10 +25,10 @@
 - If you change `OUTPUTDIR` or `SCRIPT` from defaults: Add the volume's directory/script file to the `.dockerignore` file (if it is in the same folder as the docker-compose; This avoids sending big build contexts to the daemon) and the `.gitignore` file
 - The default volume bind folders are `./app64` and `./app32`
   - Compiled files will be saved under `<volume>/output-<gitcommithash>/{fat32|ext4}`
-  - Kernel sources will be cloned to `<volume>/linux`
+  - Kernel sources will be cloned to `<volume>/linux-<branch>`
   - Each stage will log the output to `<volume>/*.log`
 - The default amount of maximum parallel Makejobs (`-jN`) defaults to `4`. It can be adjusted via the `.env` file/environment variable `MAKEJOBS`
-- You can run a regular `make menuconfig` in the `<volume>/linux` folder to create a custom config
+- You can run a regular `make menuconfig` in the `<volume>/linux-<branch>` folder to create a custom config
 
 
 ## How it works & what it does

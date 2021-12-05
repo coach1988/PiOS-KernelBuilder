@@ -1,13 +1,15 @@
 version: "3"
 
 services:
-  # Builds with "<volume>/linux/.config" file, defaults to pi4x64
+  # Builds with "<volume>/linux-<branch>/.config" file, defaults to pi4x64
   buildenv:
     build: .
     image: "pios-kbuildenv"
     environment:
       - EXIT_ON_ERROR=${EXIT_ON_ERROR:-true}
       - GITCOMMITHASH=${GITCOMMITHASH}
+      - REPOSITORY=${REPOSITORY:-https://github.com/raspberrypi/linux}
+      - BRANCH=${BRANCH:-rpi-5.10.y}
       - MODEL=${MODEL:-pi4x64}
       - MAKEJOBS=${MAKEJOBS:-4}
       - MAKEOPTS=${MAKEOPTS}
@@ -28,6 +30,8 @@ services:
     environment:
       - EXIT_ON_ERROR=${EXIT_ON_ERROR:-true}    
       - GITCOMMITHASH=${GITCOMMITHASH}
+      - REPOSITORY=${REPOSITORY:-https://github.com/raspberrypi/linux}      
+      - BRANCH=${BRANCH:-rpi-5.10.y}      
       - MODEL=${MODEL:-pi4x64}
       - MAKEJOBS=${MAKEJOBS:-4}
       - MAKEOPTS=${MAKEOPTS}

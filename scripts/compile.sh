@@ -53,6 +53,8 @@ get_env () {
     log_env MODEL=$MODEL
     log_env ARCH=$ARCH
     log_env KERNEL=$KERNEL
+    log_env REPOSITORY=$REPOSITORY    
+    log_env BRANCH=$BRANCH
     log_env KCONFIG=$KCONFIG
     log_env DEFCONFIG=$DEFCONFIG
     log_env MAKE_CLEAN=$MAKE_CLEAN
@@ -143,16 +145,18 @@ log_header Sources
 cd /app
 
 # Git clone / pull
-if [ ! -d "linux" ]
+if [ ! -d "linux-$BRANCH" ]
 then
     log_step Cloning kernel repository...
-    git clone --depth=1 $REPOSITORY linux > /app/sources.log || (log_error git clone failed!)
+    git clone --branch $BRANCH --depth=1 $REPOSITORY linux-$BRANCH > /app/sources.log || (log_error git clone failed!) && \
+    git checkout $BRANCH >> /app/sources.log || (log_error git checkout failed!)
     log_done
-    cd linux
+    cd linux-$BRANCH
 else
     log_step Pulling latest changes...
-    cd linux && \
-    git pull --rebase > /app/sources.log || (log_error git pull failed!)
+    cd linux-$BRANCH && \
+    git checkout $BRANCH > /app/sources.log || (log_error git checkout failed!) && \
+    git pull --rebase >> /app/sources.log || (log_error git pull failed!) && \
     log_done
 fi
 
