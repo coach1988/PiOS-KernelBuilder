@@ -144,14 +144,14 @@ cd /app
 if [ ! -d "$MODEL-linux-$BRANCH" ]
 then
     log_step Cloning kernel repository...
-    git clone --depth=1 $REPOSITORY $MODEL-linux-$BRANCH > /app/sources.log || (log_error git clone failed!) && \
+    git clone --depth=1 --branch $BRANCH $REPOSITORY $MODEL-linux-$BRANCH > /app/sources.log || (log_error git clone failed!)
     cd $MODEL-linux-$BRANCH && \
     git checkout $BRANCH >> /app/sources.log || (log_error git checkout failed!)
     log_done
-
 else
     log_step Pulling latest changes...
     cd $MODEL-linux-$BRANCH && \
+    git checkout $BRANCH >> /app/sources.log || (log_error git checkout failed!)
     git pull --rebase >> /app/sources.log || (log_error git pull failed!)
     log_done
 fi
