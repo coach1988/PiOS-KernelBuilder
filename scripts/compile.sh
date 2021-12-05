@@ -16,22 +16,18 @@ log_stage () {
     echo \| $@
 }
 
+log_header () {
+    log_divider
+    log_stage $(date): Entering $@ stage
+    log_divider
+}
+
 log_env () {
     echo \|--- $@
 }
 
 log_step () {
     echo \|-- $@
-}
-
-log_done () {
-    echo \| Done
-}
-
-log_header () {
-    log_divider
-    log_stage $(date): Entering $@ stage
-    log_divider
 }
 
 log_info () {
@@ -44,6 +40,10 @@ log_error () {
     then
         exit -1
     fi
+}
+
+log_done () {
+    echo \| Done
 }
 
 get_env () {
@@ -68,14 +68,6 @@ get_env () {
     log_env BUILDARGS=$BUILDARGS
     log_env INSTALLARGS=$INSTALLARGS
     log_env EXIT_ON_ERROR=$EXIT_ON_ERROR
-}
-
-update_env () {
-    # Required as $GITCOMMITHASH will be available only later on
-    # Customize me
-    export INSTALLARGS="ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE INSTALL_MOD_PATH=/app/output-$GITCOMMITHASH/ext4"
-    export REPOSITORY="https://github.com/raspberrypi/linux"
-    export BUILDARGS="-j$MAKEJOBS $MAKEOPTS ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE"
 }
 
 ##########################################################################################
@@ -135,7 +127,11 @@ esac
 # Finalize environment
 ##########################################################################################
 log_header Environment
-update_env
+
+# Customize me
+export INSTALLARGS="ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE INSTALL_MOD_PATH=/app/output-$GITCOMMITHASH/ext4"
+export BUILDARGS="-j$MAKEJOBS $MAKEOPTS ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE"
+
 get_env | tee /app/env.log
 
 ##########################################################################################
@@ -167,11 +163,12 @@ then
     git reset --hard $GITCOMMITHASH >> /app/sources.log || (log_error git reset failed!)
     log_done
 else
-    export GITCOMMITHASH=$(git rev-parse --short HEAD)
+    export GITCOMMITHASH=$(git rev-parse --short HEAD)  
 fi
 log_step Using commit $GITCOMMITHASH...
 
-update_env
+# Re-set $INSTALLARGS as we have $GITCOMMITHASH now
+export INSTALLARGS="ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE INSTALL_MOD_PATH=/app/output-$GITCOMMITHASH/ext4"
 log_info Updated INSTALLARGS to:
 log_info $INSTALLARGS
 
