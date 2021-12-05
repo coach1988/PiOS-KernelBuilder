@@ -24,11 +24,11 @@
 ## Tips & Tricks
 - If you change `OUTPUTDIR` or `SCRIPT` from defaults: Add the volume's directory/script file to the `.dockerignore` file (if it is in the same folder as the docker-compose; This avoids sending big build contexts to the daemon) and the `.gitignore` file
 - The default volume bind folders are `./app64` and `./app32`
-  - Compiled files will be saved under `<volume>/output-<branch>-<gitcommithash>/{fat32|ext4}`
-  - Kernel sources will be cloned to `<volume>/linux-<branch>`
+  - Compiled files will be saved under `<volume>/<model>-output-<branch>-<gitcommithash>/{fat32|ext4}`
+  - Kernel sources will be cloned to `<volume>/<model>-linux-<branch>`
   - Each stage will log the output to `<volume>/*.log`
 - The default amount of maximum parallel Makejobs (`-jN`) defaults to `4`. It can be adjusted via the `.env` file/environment variable `MAKEJOBS`
-- You can run a regular `make menuconfig` in the `<volume>/linux-<branch>` folder to create a custom config
+- You can run a regular `make menuconfig` in the `<volume>/<model>-linux-<branch>` folder to create a custom config
 
 
 ## How it works & what it does
@@ -43,7 +43,7 @@ This is a simple *Debian Bullseye (Slim)* based docker container with added pack
   - `make dtbs`
   - `make modules_install`
 
-Eventually, the script will copy the compiled files to `<volumes>/output-<branch>-<gitcommithash>/{fat32|ext4}`
+Eventually, the script will copy the compiled files to `<volumes>/<model>-output-<branch>-<gitcommithash>/{fat32|ext4}`
 
 ## Environment variables
 
