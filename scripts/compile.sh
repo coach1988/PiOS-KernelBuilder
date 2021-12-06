@@ -238,8 +238,20 @@ log_header Directories
 # Create output dirs
 # Customize me
 log_step Creating output directory structure...
-mkdir -p /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/overlays && \
-mkdir -p /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/ext4 > /app/$MODEL-directories-$BRANCH-$GITCOMMITHASH.log || (log_error Creating directories failed!)
+if [ ! -d /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/overlays ]
+then
+    mkdir -p /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/overlays && \
+    log_step Directory "/app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/overlays" created...
+else
+    log_step Directory "/app/$MODEL-output-$BRANCH-$GITCOMMITHASH/fat32/overlays" already exists, skipping...
+fi && \
+if [ ! -d /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/ext4 ]
+then
+    mkdir -p /app/$MODEL-output-$BRANCH-$GITCOMMITHASH/ext4 > /app/$MODEL-directories-$BRANCH-$GITCOMMITHASH.log
+    log_step Directory "/app/$MODEL-output-$BRANCH-$GITCOMMITHASH/ext4" created...
+else
+    log_step Directory "/app/$MODEL-output-$BRANCH-$GITCOMMITHASH/ext4" already exists, skipping...
+fi || (log_error Creating directories failed!)
 log_done
 
 ##########################################################################################
